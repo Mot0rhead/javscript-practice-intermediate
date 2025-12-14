@@ -110,23 +110,25 @@ executeTasks()
 //    Si el id es 5 o mayor, la promesa se rechaza con el mensaje "Usuario no encontrado".
 //    Usa async/await para llamar a getUser(id) y maneja los errores con try/catch.
 
-async function getUser(id) {
+function getUser(id) {
     return new Promise((resolve,reject)=>{
         setTimeout(()=>{
-         if(id %2 < 5){
+         if(id < 5){
             console.log()
-            resolve()
+            resolve(`${id}, nombre: "Usuario " + ${id}`)
         }else{
-            reject()
+            reject("Usuario no encontrado")
         }
         },2000)
     }) 
 }
-
+async function main (){
 try{
-getUser(2)
+let mensajeUser= await getUser(5)
+console.log(mensajeUser)
 }catch(error){
-throw new Error("Error al llamar al usuario")
+ console.error(error)
+}
 }
 // 7. Intenta predecir el resultado de este código antes de ejecutarlo en la consola:
 //    console.log("Inicio")
@@ -137,6 +139,35 @@ throw new Error("Error al llamar al usuario")
 // 8. Crea tres funciones que devuelvan promesas con tiempos de espera distintos.
 //    A continuación, usa Promise.all() para ejecutarlas todas al mismo tiempo y mostrar "Todas las promesas resueltas" cuando terminen.
 
+function promise1 (){
+    return new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log("Promise 1")
+            resolve()
+        },1000)
+    })
+}
+function promise2 (){
+    return new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log("Promise 2")
+            resolve()
+        },2000)
+    })
+}
+function promise3(){
+    return new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log("Promise 3")
+            resolve()
+        },3000)
+    })
+}
+Promise.all([
+    promise1(),
+    promise2(),
+    promise3()
+]).then(() =>{"Todas las promesas resueltas"})
 // 9. Crea una función waitSeconds(segundos) que use setTimeout dentro de una Promesa para esperar la cantidad de segundos indicada.
 //    A continuación, usa async/await para que se espere 3 segundos antes de mostrar "Tiempo finalizado" en consola.
 
@@ -151,3 +182,38 @@ throw new Error("Error al llamar al usuario")
 //     Operación exitosa, saldo restante: 200$
 //     Retirando 300$...
 //     Error: Fondos insuficientes
+
+let saldoTotal = 0
+let saldoRetirado = 0
+function checkBalance(){
+    return new Promise(resolve=>{
+        setTimeout(()=>{
+            resolve(500)
+        },1000)
+    })
+}
+function withdrawMoney(){
+    return new Promise((resolve,reject)=>{
+        setTimeout(()=>{
+            if (saldoTotal >= 300){
+            resolve(300)
+        }else{
+            reject()
+        }
+        },2000)
+    })
+}
+async function cajero () {
+saldoTotal = await checkBalance()
+console.log(` Saldo disponible: ${saldoTotal}`)
+saldoRetirado = await withdrawMoney()
+saldoTotal = saldoTotal - saldoRetirado
+console.log(` Retirando: ${saldoRetirado}`)
+console.log(`  Operación exitosa, saldo restante: ${saldoTotal}`)
+try{
+saldoRetirado = saldoRetirado + await withdrawMoney()
+}catch(error){
+    console.log(`Error: Fondos insuficientes`)
+}
+}
+cajero()
